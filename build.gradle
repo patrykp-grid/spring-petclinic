@@ -6,6 +6,7 @@ plugins {
   id 'org.cyclonedx.bom' version '1.8.2'
   id 'io.spring.javaformat' version '0.0.41'
   id "io.spring.nohttp" version "0.0.11"
+  id 'maven-publish'  // Added plugin for publishing
 }
 
 apply plugin: 'java'
@@ -22,7 +23,10 @@ java {
 }
 
 repositories {
-  mavenCentral()
+    maven {
+        url 'http://localhost:8081/repository/maven-public/'
+        allowInsecureProtocol = true
+    }
 }
 
 ext.webjarsFontawesomeVersion = "4.7.0"
@@ -67,6 +71,18 @@ checkstyleNohttp {
   configFile = file('src/checkstyle/nohttp-checkstyle.xml')
 }
 
+publishing {
+    repositories {
+        maven {
+            url 'http://localhost:8081/repository/maven-releases/'
+            allowInsecureProtocol = true
+            credentials {
+                username = 'admin'
+                password = 'admin123'
+            }
+        }
+    }
+}
 tasks.named("formatMain").configure { dependsOn("checkstyleMain") }
 tasks.named("formatMain").configure { dependsOn("checkstyleNohttp") }
 
@@ -81,3 +97,4 @@ checkFormatAotTest.enabled = false
 
 formatAot.enabled = false
 formatAotTest.enabled = false
+
